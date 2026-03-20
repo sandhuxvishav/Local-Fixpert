@@ -9,9 +9,9 @@ import { useData } from "../Context/DataContext";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-    const { user,setUser } = useData();
+  const { user, setUser } = useData();
   const [dropdown, setDropdown] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -105,7 +105,7 @@ const Navbar = () => {
               {/* Dropdown */}
               {dropdown && (
                 <div className="absolute right-0 mt-3 w-48 bg-white/80 backdrop-blur-lg shadow-lg rounded-xl border border-white/30 overflow-hidden z-50">
-                  {/* <button
+                  <button
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50"
                     onClick={() => setDropdown(false)}
                   >
@@ -116,9 +116,8 @@ const Navbar = () => {
                     onClick={() => setDropdown(false)}
                   >
                     My Bookings
-                  </button> 
-                  <hr />*/
-                  }
+                  </button>
+                  <hr />
                   <button
                     className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
                     onClick={handleLogout}

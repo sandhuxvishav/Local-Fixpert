@@ -16,8 +16,8 @@ const Home = () => {
       <AIChatAssistant />
       <Services />
       <About />
-      {/* <Review /> */}
       <Testimonials />
+      <Review />
       <Footer />
     </>
   );

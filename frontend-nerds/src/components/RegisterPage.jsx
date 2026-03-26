@@ -13,11 +13,8 @@ export default function RegisterPage() {
   async function registerUser(ev) {
     ev.preventDefault();
     try {
-      await axios.post("http://localhost:3000/register", {
-        name,
-        email,
-        password,
-      });
+      // await axios.post("https://3000-cs-216d3b45-f3d8-4c55-a68c-03929d53b127.cs-asia-east1-duck.cloudshell.dev/register/reg-insert", { name, email, password });
+      await axios.post("http://localhost:3000/register/reg-insert", { name, email, password });
       alert("🎉 Registration successful!");
 
       setRedirect(true);

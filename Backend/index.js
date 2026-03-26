@@ -7,11 +7,15 @@ const bcrypt = require("bcrypt");
 const app = express();
 require("dotenv").config();
 
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+     origin: [
+      "https://5173-cs-216d3b45-f3d8-4c55-a68c-03929d53b127.cs-asia-east1-duck.cloudshell.dev",
+      "http://localhost:5173",
+    ],
     credentials: true,
   })
 );

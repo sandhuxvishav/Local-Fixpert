@@ -14,10 +14,12 @@ const { setUser } = useData();
   async function handleLogin(ev) {
     ev.preventDefault();
     try {
-      await axios.post("http://localhost:3000/login", { email, password });
-      setUser(email);
+      const res = await axios.post("http://localhost:3000/login", { email, password });
+      // setUser(email);
       alert("Login successful! 🎉");
-
+      // console.log(res.data.user)
+      const user = res.data.user;
+      setUser(user);
       setRedirect(true);
     } catch (e) {
       if (e.response?.status === 401) {

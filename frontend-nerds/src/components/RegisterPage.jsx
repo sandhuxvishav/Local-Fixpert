@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import heroimg from "../assets/home-page/LoginWorker.png";
 import axios from "axios";
+import { useData } from "../Context/DataContext";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -9,14 +10,17 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [showForm, setShowForm] = useState(false);
+const { setUser } = useData();
+
 
   async function registerUser(ev) {
     ev.preventDefault();
     try {
       // await axios.post("https://3000-cs-216d3b45-f3d8-4c55-a68c-03929d53b127.cs-asia-east1-duck.cloudshell.dev/register/reg-insert", { name, email, password });
-      await axios.post("http://localhost:3000/register/reg-insert", { name, email, password });
+      await axios.post("http://localhost:3000/register/", { name, email, password });
+      setUser(name);
       alert("🎉 Registration successful!");
-
+      
       setRedirect(true);
     } catch (e) {
       alert("Registration failed. Please try again later.");

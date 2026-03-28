@@ -1,14 +1,23 @@
 const mongoose = require("mongoose");
 
-const expertSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  service: { type: String, required: true },
-  category: { type: String },
-  description: { type: String },
-  img: { type: String },
-  rating: { type: Number, default: 0 },
-  experience: { type: String },
-  price: { type: Number },
-});
+const expertSchema = new mongoose.Schema(
+  {
+    fullName: { type: String, required: true },   // ✅ match frontend
+    email: { type: String, required: true, unique: true },
+    mobile: { type: String },
+
+    profilePhoto: { type: String }, // base64 or URL
+
+    category: { type: String, required: true },
+    experience: { type: String },
+
+    serviceArea: { type: String, required: true },
+    language: { type: String },
+
+    rating: { type: Number, default: 0 },
+    price: { type: Number },
+  },
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("Expert", expertSchema);

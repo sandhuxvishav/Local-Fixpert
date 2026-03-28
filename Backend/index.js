@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const User = require("./models/User");
 const bcrypt = require("bcrypt");
 const app = express();
+
 require("dotenv").config();
 
 

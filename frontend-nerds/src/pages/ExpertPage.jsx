@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 const ExpertPage = () => {
   const navigate = useNavigate();
 
@@ -33,14 +33,36 @@ const ExpertPage = () => {
   };
 
   // Submit handler
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+        e.preventDefault(); // prevent default form submission
 
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/expert/regexpert",
+      form
+    );
+
+    if (response.status === 201) {
+      alert("Expert registered successfully!");
+      navigate("/profile");
+    } else {
+      alert(response.data.message || "Failed to register expert");
+    }
+  } catch (error) {
+    console.error("Error registering expert:", error);
+    if (error.response) {
+      alert(error.response.data.message || "Server error");
+    } else if (error.request) {
+      alert("No response fdrom server");
+    } else {
+      alert("Error: " + error.message);
+    }
+  }
     // Save to localStorage
-    localStorage.setItem("expert", JSON.stringify(form));
+    // localStorage.setItem("expert", JSON.stringify(form));
 
     // Redirect to Profile Page
-    navigate("/profile");
+    // navigate("/profile");
   };
 
   return (

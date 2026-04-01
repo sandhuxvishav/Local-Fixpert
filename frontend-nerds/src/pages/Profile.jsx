@@ -20,7 +20,7 @@ const Profile = () => {
     localStorage.removeItem("expert");
     navigate("/expert");
   };
-
+ 
   if (!expert) return null;
 
   return (

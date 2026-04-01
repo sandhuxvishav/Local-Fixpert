@@ -63,6 +63,10 @@ app.get("/profile", (req, res) => {
 });
 
 
+const reviewRoutes = require("./routes/Review");
+
+app.use("/review", reviewRoutes);
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });

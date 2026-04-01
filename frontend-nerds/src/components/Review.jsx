@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { FaStar } from "react-icons/fa";
-
+import { useData } from "../Context/DataContext";
+import axios from "axios";
+// import { toast } from "react-hot-toast";
 export default function Review() {
   const token = localStorage.getItem("token");
 
@@ -20,38 +22,49 @@ export default function Review() {
   const handleWebSiteRatingChange = (e) => {
     setWebsiteData({ ...websiteData, [e.target.name]: e.target.value });
   };
-  const handleWebsiteRatingSubmit = async (e) => {
-    e.preventDefault();
-    if (userRating > 0) {
-      setIsSubmitting(true);
-      setError(null);
+  const { user } = useData();
 
-      try {
-        const websitRatingData = {
-          stars: userRating,
-          reviewText: websiteData.reviewText,
-          author: websiteData.author,
-        };
+const handleWebsiteRatingSubmit = async (e) => {
+  e.preventDefault();
 
-        const response = await axios.post(
-          "http://localhost:3000/review/review-insert",
-          websitRatingData
-        );
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
 
-        toast.success("Rating submitted successfully!");
+  if (userRating > 0) {
+    setIsSubmitting(true);
+    setError(null);
 
-        setUserRating(0);
-        setWebsiteData({ author: "", reviewText: "" });
-        fetchWebsiteRatings();
-      } catch (err) {
-        console.error("Error submitting rating:", err);
-        setError("Failed to submit rating. Please try again.");
-        toast.error("Failed to submit rating");
-      } finally {
-        setIsSubmitting(false);
-      }
+    try {
+      const websitRatingData = {
+        stars: userRating,
+        reviewText: websiteData.reviewText,
+        author: user.name,
+        userId: user._id,
+      };
+
+      await axios.post(
+        "http://localhost:3000/review/review-insert",
+        websitRatingData
+      );
+
+      // toast.success("Rating submitted successfully!");
+      alert("registraiton successfully");
+
+      setUserRating(0);
+      setWebsiteData({ reviewText: "" });
+
+    } catch (err) {
+      console.error(err);
+      setError("Failed to submit rating.");
+      alert("Failed to submit reating")
+      // toast.error("Failed to submit rating");
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }
+};
 
   return (
     <div className="max-w-xl mt-10 mx-auto p-6 bg-white rounded-2xl shadow-lg border border-blue-100">
@@ -83,7 +96,7 @@ export default function Review() {
       </div>
     </div>
 
-    <div>
+    {/* <div>
       <label
         htmlFor="author"
         className="block mb-1 text-gray-600 font-semibold"
@@ -99,7 +112,7 @@ export default function Review() {
         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
         required
       />
-    </div>
+    </div> */}
 
     <div>
       <label

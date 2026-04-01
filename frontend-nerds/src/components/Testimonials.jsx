@@ -1,39 +1,26 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import axios from "axios"
+import { useState, useEffect } from "react";
 
 export default function Testimonials() {
-  const [websiteratingList] = useState([
-    {
-      author: "Aditi Sharma",
-      reviewText:
-        "I booked my repair through this site and the whole process felt smoother than my morning chai. Fast, clear, and actually helpful."
-    },
-    {
-      author: "Rohan Patel",
-      reviewText:
-        "Finding the right expert used to be a headache. This platform turned that storm into a drizzle. Booked, fixed, done."
-    },
-    {
-      author: "Kavya Desai",
-      reviewText:
-        "The service felt friendly and professional at the same time. I got updates, reminders, and no surprise charges."
-    },
-    {
-      author: "Arjun Mehta",
-      reviewText:
-        "The technician reached on time, did quality work, and didn’t try to upsell me random nonsense. Loved it."
-    },
-    {
-      author: "Sneha Verma",
-      reviewText:
-        "I’m always nervous about booking things online, but this site felt trustworthy from the first click. Clean UI, quick support, and a great repair."
-    },
-    {
-      author: "Priya Nair",
-      reviewText:
-        "My laptop was almost ready to throw itself into the sun, but the expert fixed it in under an hour. I’m impressed."
-    }
-  ]);
+  const [websiteratingList, setWebsiteratingList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/review/reviews")
+      .then((res) => setWebsiteratingList(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  function formatTime(date) {
+    const diff = Math.floor((new Date() - new Date(date)) / 1000);
+
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+
+    return new Date(date).toLocaleDateString();
+  }
 
   return (
     <div className="container mx-auto my-15">
@@ -68,7 +55,9 @@ export default function Testimonials() {
               </div>
               <div>
                 <h4 className="font-bold text-gray-900">{item.author}</h4>
-                <p className="text-sm text-gray-600">Customer</p>
+                <p className="text-sm text-gray-600">
+                  {formatTime(item.createdAt)}
+                </p>
               </div>
             </div>
 
@@ -76,7 +65,10 @@ export default function Testimonials() {
               {[...Array(5)].map((_, i) => (
                 <svg
                   key={i}
-                  className="w-5 h-5 text-yellow-400"
+                  className={`w-5 h-5 ${
+      i < item.stars ? "text-yellow-400" : "text-gray-300"
+    }`}
+
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

@@ -14,19 +14,25 @@ const { setUser } = useData();
 
 
   async function registerUser(ev) {
-    ev.preventDefault();
-    try {
-      // await axios.post("https://3000-cs-216d3b45-f3d8-4c55-a68c-03929d53b127.cs-asia-east1-duck.cloudshell.dev/register/reg-insert", { name, email, password });
-      await axios.post("http://localhost:3000/register/", { name, email, password });
-      setUser(name);
-      alert("🎉 Registration successful!");
-      
-      setRedirect(true);
-    } catch (e) {
-      alert("Registration failed. Please try again later.");
-      console.log(e);
-    }
+  ev.preventDefault();
+  try {
+    const res = await axios.post("http://localhost:3000/register/", {
+      name,
+      email,
+      password,
+    });
+
+    const { password: _, ...safeUser } = res.data;
+
+    setUser(safeUser);
+
+    alert("🎉 Registration successful!");
+    setRedirect(true);
+  } catch (e) {
+    alert("Registration failed. Please try again later.");
+    console.log(e);
   }
+}
 
   if (redirect) return <Navigate to="/" />;
 

@@ -1,31 +1,14 @@
-import { createContext, useContext, useState, useEffect } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from "react";
 
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [data, setData] = useState();
+    const [user, setUser] = useState(null);
+  const [data, setData] = useState(); // shared state
   const [locationforfilter, setlocationforfilter] = useState();
   const [selectedExpert, setSelectedExpert] = useState();
   const [serviceselect, setserviceprovide] = useState();
-
-  // ✅ Save user changes
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
-    }
-  }, [user]);
-
   return (
     <DataContext.Provider
       value={{
@@ -37,8 +20,7 @@ export const DataProvider = ({ children }) => {
         setlocationforfilter,
         serviceselect,
         setserviceprovide,
-        user,
-        setUser,
+        user,setUser
       }}
     >
       {children}

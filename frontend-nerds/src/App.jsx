@@ -5,7 +5,11 @@ import BookService from "./pages/BookService";
 import RegisterPage from "./components/RegisterPage";
 import LoginPage from "./components/LoginPage";
 import ExpertPage from "./pages/ExpertPage";
+import BecomeExpert from "./pages/Profile";
 import Profile from "./pages/Profile";
+import ExpertLogin from "./components/ExpertLogin";
+import ExpertDashboard from "./components/ExpertDashboard";
+import EditExpertProfile from "./components/EditExpertProfile";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,7 +30,10 @@ function App() {
           <Route path="/signup" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/expert" element={<ExpertPage />} />
+          <Route path="expert/login" element={<ExpertLogin />} />          
           <Route path="/profile" element={<Profile />} />
+          <Route path="/edit-profile/expert" element={<EditExpertProfile />} />
+          <Route path="/dashboard" element={<ExpertDashboard />} />
           <Route path="/mybookings" element={<MyBookings />} />
         </Routes>
       </BrowserRouter>

@@ -54,6 +54,7 @@ const ExpertPage = () => {
 
     if (response.status === 201) {
       alert("Expert registered successfully!");
+     localStorage.setItem("expert", JSON.stringify(form));
       navigate("/profile");
     } else {
       alert(response.data.message || "Failed to register expert");
@@ -224,6 +225,7 @@ const ExpertPage = () => {
                 </div>
               </div>
             </div>
+            
 
             {/* ✅ Submit Button */}
             <div className="col-span-1 md:col-span-2 text-center mt-10">

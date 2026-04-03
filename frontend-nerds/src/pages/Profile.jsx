@@ -105,10 +105,11 @@ const Profile = () => {
 
         {/* Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          {/* <button className="flex items-center justify-center gap-2 py-2 px-6 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 shadow-md">
+          <Link to="/edit-profile/expert">
+          <button className="flex items-center justify-center gap-2 py-2 px-6 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 shadow-md">
             <FaEdit /> Edit Profile
-          </button> */}
-
+          </button>
+</Link>
           <Link to={"/"}>
             <button className="flex items-center justify-center gap-2 py-2 px-6 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 shadow-md">
               <FaHome /> Home

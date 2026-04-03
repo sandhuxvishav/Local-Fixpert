@@ -106,19 +106,51 @@ router.post("/rebook/:id", async (req, res) => {
   }
 });
 
-router.put("/status/:id", async (req, res) => {
-  try {
-    const { status } = req.body;
+// router.put("/status/:id", async (req, res) => {
+//   try {
+//     const { status } = req.body;
 
+//     const booking = await Booking.findByIdAndUpdate(
+//       req.params.id,
+//       { status },
+//       { new: true }
+//     );
+
+//     res.json({ success: true, booking });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+router.put("/status/:id", async (req, res) => {
+  const { status } = req.body;
+
+  try {
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true }
     );
 
-    res.json({ success: true, booking });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.json(booking);
+  } catch (err) {
+    res.status(500).json({ message: "Error updating status" });
+  }
+});
+
+router.get("/expert/:expertId", async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      expertId: req.params.expertId,
+    }).sort({ createdAt: -1 });
+
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching bookings" });
   }
 });
 

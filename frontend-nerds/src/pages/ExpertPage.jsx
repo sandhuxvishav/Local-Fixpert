@@ -16,6 +16,16 @@ const ExpertPage = () => {
     language: "",
     serviceArea: "",
   });
+  
+  const services = [
+    "Plumbing",
+    "Electrician",
+    "House Cleaning",
+    "AC Servicing",
+    "Carpenter",
+    "Mover",
+    "Wall Painter",
+  ];
 
   // Handle input change
   const handleChange = (e) => {
@@ -156,14 +166,19 @@ const ExpertPage = () => {
                   <label className="block text-gray-700 font-medium mb-1">
                     Category
                   </label>
-                  <input
-                    type="text"
+            <select
                     name="category"
                     value={form.category}
                     onChange={handleChange}
-                    placeholder="Eg. Plumber / Electrician"
-                    className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option value="">Choose a service</option>
+                    {services.map((item) => (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>

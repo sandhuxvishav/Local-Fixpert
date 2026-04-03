@@ -221,7 +221,7 @@ const Hero = () => {
               </p>
             </div>
 
-            <NavLink to="/expert">
+            <NavLink to="/bookservice">
               <div className="bg-blue-500 py-2.5 px-10 rounded-full w-fit text-white mx-auto md:mx-0 cursor-pointer hover:scale-105 transition">
                 Get an Expert
               </div>

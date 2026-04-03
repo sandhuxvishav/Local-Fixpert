@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { Link } from "react-scroll";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { ImCross } from "react-icons/im";
@@ -8,6 +9,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { useData } from "../Context/DataContext";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, setUser } = useData();
   const [dropdown, setDropdown] = useState(false);
@@ -113,7 +115,10 @@ const Navbar = () => {
                   </button>
                   <button
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50"
-                    onClick={() => setDropdown(false)}
+                    onClick={() => {
+  setDropdown(false);
+  navigate("/mybookings");
+}}
                   >
                     My Bookings
                   </button>

@@ -1,9 +1,12 @@
 import { useState } from "react";
+import axios from "axios"; // ✅ added
 import { useData } from "../Context/DataContext";
 import Nav from "./Nav";
 import { FaStar, FaRegStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const StepThree = ({ step, onBack }) => {
+  const navigate = useNavigate();
   const { selectedExpert } = useData();
 
   // 🧾 Form state
@@ -35,44 +38,66 @@ const StepThree = ({ step, onBack }) => {
       </div>
     );
 
-  // 📅 Handle booking form submit
+  // 📅 Handle booking form submit (✅ FIXED ONLY THIS)
   const handleBooking = async (e) => {
     e.preventDefault();
 
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
-    if (!storedUser) {
-      alert("✅ Confirmation Successful! Your booking has been placed.");
-      return;
-    }
-
-    const bookingData = {
-      userId: storedUser._id,
-      expertId: selectedExpert._id,
-      expertName: selectedExpert.name,
-      service: selectedExpert.service,
-      serviceType,
-      description,
-      date,
-      time,
-      location,
-      mobile,
-      payment,
-    };
-
-    console.log("📤 Booking data being sent:", bookingData);
-
     try {
-      // ✅ Using configured API instance (includes cookies/JWT)
-      await axios.post("http://localhost:3000/bookservice", bookingData, {
-        withCredentials: true,
-      });
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      // 🔒 Validation
+      if (!storedUser?._id) {
+        alert("User not logged in");
+        return;
+      }
+
+      if (!selectedExpert?._id) {
+        alert("No expert selected");
+        return;
+      }
+
+      if (!date || !location || !mobile || !payment) {
+        alert("Please fill all required fields");
+        return;
+      }
+
+      const bookingData = {
+        userId: storedUser._id,
+        expertId: selectedExpert._id,
+        expertName: selectedExpert.fullName, // ✅ fixed
+        serviceType, // ✅ correct field
+        description,
+        date,
+        time,
+        location,
+        mobile,
+        payment,
+      };
+
+      console.log("📤 Booking data being sent:", bookingData);
+
+      const response = await axios.post(
+        "http://localhost:3000/bookservice",
+        bookingData
+      );
 
       console.log("✅ Booking response:", response.data);
+
       alert("✅ Booking created successfully!");
+       navigate("/mybookings");
+      // 🔄 Reset form (optional)
+      setDate("");
+      setLocation("");
+      setMobile("");
+      setPayment("");
+
     } catch (error) {
       console.error("❌ Booking error:", error.response?.data || error.message);
-      alert("❌ Failed to create booking. Check console for details.");
+
+      alert(
+        error.response?.data?.message ||
+          "❌ Failed to create booking. Check console."
+      );
     }
   };
 
@@ -106,16 +131,19 @@ const StepThree = ({ step, onBack }) => {
             </h2>
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
               <img
-                src={selectedExpert.img}
-                alt={selectedExpert.name}
-                className="w-32 h-32 object-cover rounded-full border-2 border-blue-400"
+                src={
+                  selectedExpert.profilePhoto ||
+                  `https://ui-avatars.com/api/?name=${selectedExpert.fullName}`
+                }
+                alt={selectedExpert.fullName}
+                className="w-28 h-28 rounded-full mx-auto mb-3 object-cover border-2 border-blue-400"
               />
               <div className="flex-1 text-center sm:text-left">
                 <h3 className="text-xl font-bold text-gray-800">
-                  {selectedExpert.name}
+                  {selectedExpert.fullName}
                 </h3>
                 <p className="text-blue-600 font-medium mb-2">
-                  {selectedExpert.service}
+                  {selectedExpert.category}
                 </p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {selectedExpert.description}
@@ -138,6 +166,13 @@ const StepThree = ({ step, onBack }) => {
                 </p>
               </div>
             </div>
+
+            <button
+              onClick={onBack}
+              className="mt-10 px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 mx-auto block"
+            >
+              ← Back
+            </button>
           </div>
 
           {/* 📋 User Info Form */}

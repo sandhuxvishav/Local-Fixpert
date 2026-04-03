@@ -1,41 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Booking = require("../models/Booking");
-const jwt = require("jsonwebtoken");
-
-/* -------------------------------------------------------------------------- */
-/*                          🔹 Middleware: Verify Token                       */
-/* -------------------------------------------------------------------------- */
-const verifyToken = (req, res, next) => {
-  try {
-    const token = req.cookies?.token;
-
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-    // ✅ Use same secret as used during login
-    jwt.verify(
-      token,
-      process.env.JWT_SECRET || "ggfkshfgksh",
-      (err, decoded) => {
-        if (err) return res.status(403).json({ message: "Invalid token" });
-        req.userId = decoded.id;
-        next();
-      }
-    );
-  } catch (error) {
-    console.error("❌ Token verification failed:", error.message);
-    return res.status(500).json({ message: "Token verification error" });
-  }
-};
 
 /* -------------------------------------------------------------------------- */
 /*                         🔹 POST: Create New Booking                        */
 /* -------------------------------------------------------------------------- */
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const {
+      userId, // ✅ now coming from frontend
       expertId,
       expertName,
       serviceType,
@@ -47,12 +20,12 @@ router.post("/", verifyToken, async (req, res) => {
       time,
     } = req.body;
 
-    if (!expertId || !date || !location) {
+    if (!userId || !expertId || !date || !location) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const newBooking = await Booking.create({
-      userId: req.userId, // ✅ taken from decoded JWT
+      userId,
       expertId,
       expertName,
       serviceType,
@@ -78,11 +51,13 @@ router.post("/", verifyToken, async (req, res) => {
 /* -------------------------------------------------------------------------- */
 /*                     🔹 GET: Fetch All Bookings for a User                  */
 /* -------------------------------------------------------------------------- */
-router.get("/mybookings", verifyToken, async (req, res) => {
+router.get("/mybookings/:userId", async (req, res) => {
   try {
-    const bookings = await Booking.find({ userId: req.userId })
+    const { userId } = req.params;
+
+    const bookings = await Booking.find({ userId })
       .populate("expertId", "name category")
-      .sort({ date: -1 });
+      .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, bookings });
   } catch (error) {

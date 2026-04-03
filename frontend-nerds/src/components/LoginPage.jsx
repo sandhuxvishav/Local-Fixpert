@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 import heroimg from "../assets/home-page/LoginWorker.png"; // ✅ Make sure this path is correct
 import { useData } from "../Context/DataContext";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,16 +17,18 @@ const { setUser } = useData();
     try {
       const res = await axios.post("http://localhost:3000/login", { email, password });
       // setUser(email);
-      alert("Login successful! 🎉");
+      toast.success("Login successful!");
       // console.log(res.data.user)
       const user = res.data.user;
       setUser(user);
       setRedirect(true);
     } catch (e) {
       if (e.response?.status === 401) {
-        alert("Invalid email or password");
+        // alert("Invalid email or password");
+        toast.error("Invalid email or password");
       } else {
-        alert("Server error. Please try again later.");
+        toast.error("Server error. Please try again later.");
+        // alert("Server error. Please try again later.");
       }
     }
   }

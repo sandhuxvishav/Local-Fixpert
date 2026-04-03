@@ -1,37 +1,59 @@
 import { useEffect, useState } from "react";
 import { useData } from "../Context/DataContext";
 import Nav from "./Nav";
+import axios from "axios";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import expertsData from "../data/expertsData.json"; // ✅ Import your JSON file
 
 const StepTwo = ({ onNext, step, onBack }) => {
   const { setSelectedExpert, locationforfilter, serviceselect } = useData();
-  const [experts, setExperts] = useState([]);
 
-  // 🧠 Filter experts based on both location & service
+  // ✅ ALL state inside component
+  const [experts, setExperts] = useState([]);
+  const [allExperts, setAllExperts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch experts
   useEffect(() => {
-    if (!locationforfilter && !serviceselect) {
-      setExperts(expertsData);
-      return;
+    const fetchExperts = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/expert/experts");
+        setAllExperts(res.data);
+        setExperts(res.data);
+      } catch (err) {
+        console.error("Error fetching experts:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExperts();
+  }, []);
+
+  // ✅ Filter logic (FIXED)
+  useEffect(() => {
+    let filtered = allExperts;
+
+    if (locationforfilter) {
+      filtered = filtered.filter((expert) =>
+        expert.serviceArea
+          ?.toLowerCase()
+          .includes(locationforfilter.toLowerCase())
+      );
     }
 
-    const filtered = expertsData.filter((expert) => {
-      const matchesCity = locationforfilter
-        ? expert.city.toLowerCase().includes(locationforfilter.toLowerCase())
-        : true;
-
-      const matchesService = serviceselect
-        ? expert.service.toLowerCase().includes(serviceselect.toLowerCase())
-        : true;
-
-      return matchesCity && matchesService;
-    });
+    if (serviceselect) {
+      filtered = filtered.filter((expert) =>
+        expert.category
+          ?.toLowerCase()
+          .includes(serviceselect.toLowerCase())
+      );
+    }
 
     setExperts(filtered);
-  }, [locationforfilter, serviceselect]);
+  }, [locationforfilter, serviceselect, allExperts]);
 
-  // ⭐ Render stars dynamically
-  const renderStars = (rating) => (
+  // ⭐ Stars
+  const renderStars = (rating = 0) => (
     <div className="flex justify-center gap-1">
       {[1, 2, 3, 4, 5].map((i) =>
         i <= rating ? (
@@ -43,15 +65,14 @@ const StepTwo = ({ onNext, step, onBack }) => {
     </div>
   );
 
-  // 🧠 Function to handle "Hire Me"
+  // ✅ Hire
   const handleHire = (expert) => {
     setSelectedExpert({
       ...expert,
-      _id: expert._id || Date.now().toString(),
-      category: expert.service,
+      category: expert.category,
       description: "Skilled expert ready to assist you.",
     });
-    onNext(); // ✅ Go to StepThree
+    onNext();
   };
 
   return (
@@ -63,7 +84,10 @@ const StepTwo = ({ onNext, step, onBack }) => {
           Expert Profiles
         </h2>
 
-        {experts.length === 0 ? (
+        {/* ✅ Optional loading */}
+        {loading ? (
+          <p className="text-center text-gray-600">Loading...</p>
+        ) : experts.length === 0 ? (
           <p className="text-center text-gray-600 text-lg">
             No experts found for{" "}
             <span className="text-blue-600 font-semibold">
@@ -73,7 +97,6 @@ const StepTwo = ({ onNext, step, onBack }) => {
             <span className="text-blue-600 font-semibold">
               {locationforfilter || "your area"}
             </span>
-            .
           </p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
@@ -83,26 +106,31 @@ const StepTwo = ({ onNext, step, onBack }) => {
                 className="bg-white rounded-2xl p-6 text-center shadow-md border border-blue-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
               >
                 <img
-                  src={ex.img}
-                  alt={ex.name}
+                  src={
+                    ex.profilePhoto ||
+                    `https://ui-avatars.com/api/?name=${ex.fullName}`
+                  }
+                  alt={ex.fullName}
                   className="w-28 h-28 rounded-full mx-auto mb-3 object-cover border-2 border-blue-400"
                 />
-                <h3 className="font-bold text-lg text-gray-800">{ex.name}</h3>
-                <p className="text-blue-600 font-medium mb-2">{ex.service}</p>
+
+                {/* ✅ FIXED fields */}
+                <h3 className="font-bold text-lg text-gray-800">
+                  {ex.fullName}
+                </h3>
+
+                <p className="text-blue-600 font-medium mb-2">
+                  {ex.category}
+                </p>
+
                 {renderStars(ex.rating)}
+
                 <div className="text-sm text-left mt-4 space-y-1 text-gray-700">
-                  <p>
-                    <b>📞 Contact:</b> {ex.phone}
-                  </p>
-                  <p>
-                    <b>📍 City:</b> {ex.city}
-                  </p>
-                  <p>
-                    <b>👥 Clients served:</b> {ex.clients}
-                  </p>
+                  <p><b>📞 Contact:</b> {ex.mobile}</p>
+                  <p><b>📍 City:</b> {ex.serviceArea}</p>
+                  <p><b>👥 Clients served:</b> {ex.clients || 0}</p>
                 </div>
 
-                {/* Hire Button */}
                 <div className="flex gap-3 mt-6 justify-center">
                   <button
                     onClick={() => handleHire(ex)}
@@ -116,7 +144,6 @@ const StepTwo = ({ onNext, step, onBack }) => {
           </div>
         )}
 
-        {/* 🔙 Back Button */}
         <button
           onClick={onBack}
           className="mt-10 px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 mx-auto block"

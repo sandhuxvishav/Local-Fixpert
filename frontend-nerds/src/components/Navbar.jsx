@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useReducer } from "react";
 import { Link } from "react-scroll";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,8 @@ import logo from "../assets/logo.png";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { ImCross } from "react-icons/im";
 import { FaUserCircle } from "react-icons/fa";
+import { HashLink } from "react-router-hash-link";
+
 import { useData } from "../Context/DataContext";
 
 const Navbar = () => {
@@ -30,8 +32,8 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", to: "/" },
-    { name: "Services", to: "services" },
-    { name: "About Us", to: "about" },
+    { name: "Services", to: "/#services" },
+    { name: "About Us", to: "/#about" },
   ];
 
   return (
@@ -55,7 +57,7 @@ const Navbar = () => {
           <ul className="flex gap-8 text-gray-700 font-medium poppins-regular">
             {navLinks.map((link) => (
               <li key={link.to}>
-                <Link
+                <HashLink
                   to={link.to}
                   smooth={true}
                   duration={600}
@@ -70,7 +72,7 @@ const Navbar = () => {
                     [&.active]:text-blue-600 [&.active]:after:w-full"
                 >
                   {link.name}
-                </Link>
+                </HashLink>
               </li>
             ))}
           </ul>
@@ -101,7 +103,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition"
               >
                 <FaUserCircle size={30} className="text-blue-600" />
-                <span className="font-semibold">{user.name}</span>
+                <span className="font-semibold">{user.name ? user.name : user.fullName}</span>
               </button>
 
               {/* Dropdown */}
@@ -109,19 +111,35 @@ const Navbar = () => {
                 <div className="absolute right-0 mt-3 w-48 bg-white/80 backdrop-blur-lg shadow-lg rounded-xl border border-white/30 overflow-hidden z-50">
                   <button
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50"
-                    onClick={() => setDropdown(false)}
+                    onClick={() => {
+                      setDropdown(false);
+                      navigate("/profile");
+                    }}
                   >
                     My Profile
                   </button>
-                  <button
+                  { user.isExpert ? (
+                     <button
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50"
                     onClick={() => {
-  setDropdown(false);
-  navigate("/mybookings");
-}}
+                      setDropdown(false);
+                      navigate("/dashboard");
+                    }}
+                  >
+                    Dashboard
+                  </button>
+                  ) 
+                  :(<button
+                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50"
+                    onClick={() => {
+                      setDropdown(false);
+                      navigate("/mybookings");
+                    }}
                   >
                     My Bookings
-                  </button>
+                  </button>)
+                  }
+
                   <hr />
                   <button
                     className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"

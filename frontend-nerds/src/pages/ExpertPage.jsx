@@ -1,8 +1,12 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useData } from "../Context/DataContext";
+
 const ExpertPage = () => {
+const { setUser } = useData();
+
   const navigate = useNavigate();
 
   // Form State
@@ -16,7 +20,8 @@ const ExpertPage = () => {
     language: "",
     serviceArea: "",
   });
-  
+
+
   const services = [
     "Plumbing",
     "Electrician",
@@ -44,31 +49,39 @@ const ExpertPage = () => {
 
   // Submit handler
   const handleSubmit = async (e) => {
-        e.preventDefault(); // prevent default form submission
+    e.preventDefault(); // prevent default form submission
 
-  try {
-    const response = await axios.post(
-      "http://localhost:3000/expert/regexpert",
-      form
-    );
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/expert/regexpert",
+        form
+      );
 
-    if (response.status === 201) {
-      alert("Expert registered successfully!");
-     localStorage.setItem("expert", JSON.stringify(form));
-      navigate("/profile");
-    } else {
-      alert(response.data.message || "Failed to register expert");
+      if (response.status === 201) {
+        // const expert = [...response.data];
+        alert("Expert registered successfully!");
+        // console.log(response.data.expert);
+        const expertData = response.data.expert;
+        const expert = {
+          ...expertData,
+          name: expertData.fullName, // map fullName → name
+        };
+        setUser(expert);
+        // localStorage.setItem("expert", JSON.stringify(form));
+        navigate("/profile");
+      } else {
+        alert(response.data.message || "Failed to register expert");
+      }
+    } catch (error) {
+      console.error("Error registering expert:", error);
+      if (error.response) {
+        alert(error.response.data.message || "Server error");
+      } else if (error.request) {
+        alert("No response fdrom server");
+      } else {
+        alert("Error: " + error.message);
+      }
     }
-  } catch (error) {
-    console.error("Error registering expert:", error);
-    if (error.response) {
-      alert(error.response.data.message || "Server error");
-    } else if (error.request) {
-      alert("No response fdrom server");
-    } else {
-      alert("Error: " + error.message);
-    }
-  }
     // Save to localStorage
     // localStorage.setItem("expert", JSON.stringify(form));
 
@@ -167,7 +180,7 @@ const ExpertPage = () => {
                   <label className="block text-gray-700 font-medium mb-1">
                     Category
                   </label>
-            <select
+                  <select
                     name="category"
                     value={form.category}
                     onChange={handleChange}
@@ -225,7 +238,16 @@ const ExpertPage = () => {
                 </div>
               </div>
             </div>
-            
+
+            <div className="text-center text-gray-600 text-sm mt-4">
+              Already have an account?{" "}
+              <Link
+                className="underline text-blue-600 font-medium hover:text-blue-800"
+                to="/expert/login"
+              >
+                Login
+              </Link>
+            </div>
 
             {/* ✅ Submit Button */}
             <div className="col-span-1 md:col-span-2 text-center mt-10">

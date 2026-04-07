@@ -16,6 +16,8 @@ const expertSchema = new mongoose.Schema(
 
     rating: { type: Number, default: 0 },
     price: { type: Number },
+    isExpert: { type: Boolean, default: true },
+    isCustomer: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useData } from "../Context/DataContext";
+import { Link } from "react-router-dom";
 
 const ExpertDashboard = () => {
   const [bookings, setBookings] = useState([]);
+    const { user, setUser } = useData();
+    const expert = user;
+    console.log(expert.id)
+  // const expert = JSON.parse(localStorage.getItem("expert"));
 
-  const expert = JSON.parse(localStorage.getItem("expert"));
-
+  useEffect(() => {
+  console.log("Effect triggered");
+}, []);
   // ✅ Fetch bookings
   useEffect(() => {
     if (!expert?._id) return;
@@ -16,7 +23,7 @@ const ExpertDashboard = () => {
       )
       .then((res) => setBookings(res.data))
       .catch((err) => console.log(err));
-  }, []);
+  }, [expert]);
 
   // ✅ Update status
   const updateStatus = async (id, status) => {

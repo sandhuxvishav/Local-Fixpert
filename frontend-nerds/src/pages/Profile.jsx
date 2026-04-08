@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { FaUserCircle, FaEdit, FaSignOutAlt } from "react-icons/fa";
+import { FaUserCircle, FaEdit,FaHome, FaSignOutAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+// import { FaHome } from "react-icons/fa";
 import { useData } from "../Context/DataContext";
 
 const Profile = () => {
@@ -145,7 +145,7 @@ const Profile = () => {
 
           {/* Header */}
           <h1 className="text-center text-3xl sm:text-4xl font-bold text-blue-700 mb-8">
-            Expert Profile
+            User Profile
           </h1>
 
           {/* Profile Section */}
@@ -164,6 +164,7 @@ const Profile = () => {
               <button
                 className="absolute bottom-1 right-1 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full text-sm shadow-md"
                 title="Edit Profile Photo"
+                
               >
                 <FaEdit size={14} />
               </button>

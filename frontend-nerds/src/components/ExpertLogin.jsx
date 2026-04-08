@@ -41,7 +41,7 @@ const { setUser } = useData();
 
         // alert("Login successful!");
         toast.success("Login successful!");
-        navigate("/dashboard");
+        navigate("/");
       }
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");

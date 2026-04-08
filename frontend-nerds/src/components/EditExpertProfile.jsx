@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useData } from "../Context/DataContext";
+
 import axios from "axios";
 
 const EditProfile = () => {
     const navigate = useNavigate();
-
+      const {user ,setUser} = useData();
+    
     const [form, setForm] = useState({
         fullName: "",
         email: "",
@@ -30,7 +33,7 @@ const EditProfile = () => {
 
     /* ---------------- Load Existing Data ---------------- */
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("expert"));
+        const stored = user;
         if (!stored) {
             navigate("/expert/login");
         } else {
@@ -76,7 +79,7 @@ const EditProfile = () => {
 
     /* ---------------- Update Profile ---------------- */
     const handleUpdate = async () => {
-  const stored = JSON.parse(localStorage.getItem("expert"));
+  const stored = user;
 
   if (!stored || !stored._id) {
     alert("Please login again");
@@ -92,7 +95,12 @@ const EditProfile = () => {
     );
 
     // ✅ USE res HERE (inside try)
-    localStorage.setItem("expert", JSON.stringify(res.data));
+    // localStorage.setItem("expert", JSON.stringify(res.data));
+    const expert = {
+          ...res.data,
+          name: res.data.fullName, // map fullName → name
+        };
+    setUser(expert);
 
     alert("Profile updated successfully!");
     navigate("/profile");
@@ -217,14 +225,23 @@ const EditProfile = () => {
                             />
                         </div>
                     </div>
+                    
                 </div>
 
                 {/* ---------------- BUTTON ---------------- */}
-                <div className="text-center mt-10">
+                 
+                <div className="text-center mt-10 gap-15">
+                    <button
+                        onClick={()=> navigate("/profile")}
+                        className={`px-10 my-8 py-3 rounded-xl text-white font-semibold transition
+                                 bg-blue-600 hover:bg-blue-700 mx-8
+                            `}
+                    >Cancel
+                    </button>
                     <button
                         onClick={handleUpdate}
                         disabled={loading}
-                        className={`px-10 py-3 rounded-xl text-white font-semibold transition ${loading
+                        className={`px-10 my-8 py-3 rounded-xl text-white font-semibold transition ${loading
                                 ? "bg-gray-400 cursor-not-allowed"
                                 : "bg-blue-600 hover:bg-blue-700"
                             }`}

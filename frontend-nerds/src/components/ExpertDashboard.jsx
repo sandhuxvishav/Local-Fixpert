@@ -1,158 +1,150 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
+import { Link,useNavigate } from "react-router-dom";
 import { useData } from "../Context/DataContext";
-import { Link } from "react-router-dom";
+import {
+  CheckCircle,
+  Clock,
+  Pencil,
+  Star,
+  LogOut,
+} from "lucide-react";
 
 const ExpertDashboard = () => {
-  const [bookings, setBookings] = useState([]);
-    const { user, setUser } = useData();
-    const expert = user;
-    console.log(expert.id)
-  // const expert = JSON.parse(localStorage.getItem("expert"));
+  const {user ,setUser} = useData();
+  const navigate = useNavigate(); 
 
-  useEffect(() => {
-  console.log("Effect triggered");
-}, []);
-  // ✅ Fetch bookings
-  useEffect(() => {
-    if (!expert?._id) return;
-
-    axios
-      .get(
-        `http://localhost:3000/bookservice/expert/${expert._id}`
-      )
-      .then((res) => setBookings(res.data))
-      .catch((err) => console.log(err));
-  }, [expert]);
-
-  // ✅ Update status
-  const updateStatus = async (id, status) => {
-    try {
-      const res = await axios.put(
-        `http://localhost:3000/bookservice/status/${id}`,
-        { status }
-      );
-
-      setBookings((prev) =>
-        prev.map((b) => (b._id === id ? res.data : b))
-      );
-    } catch (err) {
-      console.log(err);
-    }
+   const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    setDropdown(false);
   };
 
-  // ✅ Status colors
-  const getStatusColor = (status) => {
-    const s = status.toLowerCase();
-
-    if (s === "completed") return "bg-green-100 text-green-700";
-    if (s === "cancelled") return "bg-red-100 text-red-700";
-    if (s === "accepted") return "bg-blue-100 text-blue-700";
-    return "bg-yellow-100 text-yellow-700";
-  };
-
-  return (
-    <div className="p-6 sm:p-8 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-8 text-center text-blue-700">
-        My Bookings
-      </h2>
-      {/* <Link to="/profile">
-      <h4 className="text-3xl font-bold mb-8 text-center text-blue-700">
-        My Profile
-      </h4>
-        </Link> */}
-
-
-      {bookings.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No bookings found
-        </p>
-      ) : (
-        <div className="space-y-5">
-          {bookings.map((b) => (
-            <div
-              key={b._id}
-              className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
-            >
-              {/* INFO */}
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
-                <div>
-                  <p>
-                    <b>User:</b>{" "}
-                    {b.userId?.name || "Unknown"}
-                  </p>
-
-                  <p>
-                    <b>Mobile:</b>{" "}
-                    {b.userId?.mobile || "N/A"}
-                  </p>
-
-                  <p>
-                    <b>Service:</b>{" "}
-                    {b.service || "Not specified"}
-                  </p>
-
-                  <p>
-                    <b>Date:</b>{" "}
-                    {new Date(
-                      b.createdAt
-                    ).toLocaleString()}
-                  </p>
-                </div>
-
-                {/* STATUS */}
-                <div className="flex items-start sm:items-end">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                      b.status
-                    )}`}
-                  >
-                    {b.status}
-                  </span>
-                </div>
-              </div>
-
-              {/* 🔥 ACTION BUTTONS */}
-              <div className="mt-4 flex flex-wrap gap-2">
-                {b.status.toLowerCase() === "pending" && (
-                  <>
-                    <button
-                      onClick={() =>
-                        updateStatus(b._id, "Accepted")
-                      }
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-lg text-sm"
-                    >
-                      Accept
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        updateStatus(b._id, "Cancelled")
-                      }
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-sm"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                )}
-
-                {b.status.toLowerCase() === "accepted" && (
-                  <button
-                    onClick={() =>
-                      updateStatus(b._id, "Completed")
-                    }
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm"
-                  >
-                    Mark Complete
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+   return (
+    <div className="bg-[#eef2f7] min-h-screen">
+      {/* HERO */}
+      <div className="mt-10 px-6 md:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div>
+          <h2 className="text-3xl md:text-4xl font-bold">
+            Welcome back, {user.name}
+          </h2>
+          <p className="text-gray-600 mt-2">
+            Here’s your latest stats and job updates.
+          </p>
         </div>
-      )}
+
+        <div className="w-40 h-40  rounded-full flex items-center justify-center text-white text-lg overflow-hidden">
+          {user.profilePhoto ? (
+                <img
+                  src={user.profilePhoto}
+                  alt="Profile"
+                  className="w-40 h-40 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-blue-400 shadow-lg"
+                />
+              ) : (
+                <img
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+              user.name ?? "U"
+            )}&background=3b82f6&color=fff&size=128`}
+            alt={user.name ?? "User"}
+            className="w-full h-full object-cover"
+          />
+              )}
+          
+        </div>
+      </div>
+
+      {/* STATS */}
+      <div className="px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard icon={<CheckCircle />} label="Job completed" value="23" onClick={() => navigate("/expertbookings?tab=Completed")} />
+        <StatCard icon={<Clock />} label="Pending Requests" value="2" onClick={() => navigate("/expertbookings?tab=Pending")}/>
+        <StatCard icon={<Pencil />} label="Edit Profile" value="" onClick={() => navigate("/edit-profile/expert")} />
+        <StatCard icon={<Star />} label="Rating" value="4.6 ⭐" />
+      </div>
+
+      {/* MAIN GRID */}
+      <div className="px-6 md:px-12 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* LEFT LARGE CARD */}
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow p-6 min-h-[300px]">
+          <h3 className="bg-blue-600 text-white px-4 py-2 rounded-lg inline-block mb-4">
+            Manage Profile
+          </h3>
+
+          <p className="text-gray-500">
+            Profile details and analytics will appear here.
+          </p>
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div className="space-y-6">
+
+          {/* ACTIVE JOB */}
+          <div className="bg-white rounded-2xl shadow p-4">
+            <h3 className="bg-blue-600 text-white px-4 py-2 rounded-lg inline-block mb-4">
+              Active job
+            </h3>
+
+            {[
+              "Jaideep Singh",
+              "Harkirat",
+              "Vishav Singh",
+            ].map((name, i) => (
+              <div
+                key={i}
+                className="flex justify-between items-center border-b py-3 last:border-none"
+              >
+                <div>
+                  <p className="font-semibold">{name}</p>
+                  <p className="text-sm text-gray-500">
+                    Pipe fixing • April 12
+                  </p>
+                </div>
+
+                <button className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">
+                  View
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* PROFILE ACTIONS */}
+          <div className="bg-white rounded-2xl shadow p-4">
+            <h3 className="text-blue-600 font-semibold mb-4">
+              Manage Profile
+            </h3>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span>Availability: Online</span>
+                <div className="w-10 h-5 bg-green-500 rounded-full"></div>
+              </div>
+
+              <button className="flex items-center gap-2 text-gray-700" onClick={() => navigate("/edit-profile/expert")}>
+                <Pencil size={16} /> Edit Profile
+              </button>
+
+              <button className="flex items-center gap-2 text-red-500" onClick={handleLogout}>
+                <LogOut size={16} /> Log out
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 };
+
+const StatCard = ({ icon, label, value, onClick }) => (
+  <div
+    onClick={onClick}
+    className="bg-white rounded-xl shadow p-4 text-center cursor-pointer hover:shadow-lg transition"
+  >
+    <div className="text-blue-600 flex justify-center mb-2">
+      {icon}
+    </div>
+    <p className="text-sm text-gray-500">{label}</p>
+    <p className="text-lg font-semibold">{value}</p>
+  </div>
+);
 
 export default ExpertDashboard;

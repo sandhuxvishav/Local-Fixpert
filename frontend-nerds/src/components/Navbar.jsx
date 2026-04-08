@@ -17,12 +17,12 @@ const Navbar = () => {
   const [dropdown, setDropdown] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -123,7 +123,7 @@ const Navbar = () => {
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50"
                     onClick={() => {
                       setDropdown(false);
-                      navigate("/dashboard");
+                      navigate("/expertbookings");
                     }}
                   >
                     Dashboard

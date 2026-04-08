@@ -146,7 +146,7 @@ router.get("/expert/:expertId", async (req, res) => {
   try {
     const bookings = await Booking.find({
       expertId: req.params.expertId,
-    }).sort({ createdAt: -1 });
+    }).populate("userId", "name").sort({ createdAt: -1 });
 
     res.json(bookings);
   } catch (err) {

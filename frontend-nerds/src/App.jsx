@@ -8,7 +8,7 @@ import ExpertPage from "./pages/ExpertPage";
 import BecomeExpert from "./pages/Profile";
 import Profile from "./pages/Profile";
 import ExpertLogin from "./components/ExpertLogin";
-import ExpertDashboard from "./components/ExpertDashboard";
+import ExpertBookings from "./components/ExpertBookings";
 import EditExpertProfile from "./components/EditExpertProfile";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
@@ -33,7 +33,7 @@ function App() {
           <Route path="expert/login" element={<ExpertLogin />} />          
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit-profile/expert" element={<EditExpertProfile />} />
-          <Route path="/dashboard" element={<ExpertDashboard />} />
+          <Route path="/expertbookings" element={<ExpertBookings />} />
           <Route path="/mybookings" element={<MyBookings />} />
         </Routes>
       </BrowserRouter>

@@ -122,10 +122,12 @@ const StepTwo = ({ onNext, step, onBack }) => {
                 <p className="text-blue-600 font-medium mb-2">
                   {ex.category}
                 </p>
+                
 
                 {renderStars(ex.rating)}
 
                 <div className="text-sm text-left mt-4 space-y-1 text-gray-700">
+                  <p><b>Expert ID:</b> {ex.expertID}</p>
                   <p><b>📞 Contact:</b> {ex.mobile}</p>
                   <p><b>📍 City:</b> {ex.serviceArea}</p>
                   <p><b>👥 Clients served:</b> {ex.clients || 0}</p>

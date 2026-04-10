@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useData } from "../Context/DataContext";
+
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState("all");
+  const { user,setUser } = useData();
 
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  // const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedUser = user;
 
   const fetchBookings = async () => {
     const res = await axios.get(
@@ -86,6 +90,7 @@ export default function MyBookings() {
             <p className="font-medium mt-1">
               👨‍🔧 {booking.expertName}
             </p>
+           
 
             <p className="text-sm mt-2 text-gray-600">
               {booking.description}

@@ -11,6 +11,7 @@ const bookingSchema = new mongoose.Schema(
       ref: "Expert",
       required: true,
     },
+    // expertID: { type: String, required: true},
     expertName: { type: String, required: true },
     serviceType: { type: String, required: true },
     description: { type: String },
@@ -23,6 +24,7 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "confirmed", "completed", "cancelled"],
       default: "pending",
+      lowercase: "true",
     },
   },
   { timestamps: true }

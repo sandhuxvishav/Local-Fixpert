@@ -5,7 +5,7 @@ import axios from "axios";
 import { useData } from "../Context/DataContext";
 
 const ExpertPage = () => {
-const { setUser } = useData();
+  const { setUser } = useData();
 
   const navigate = useNavigate();
 
@@ -13,6 +13,7 @@ const { setUser } = useData();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
+    password: "",
     mobile: "",
     profilePhoto: "",
     category: "",
@@ -60,7 +61,7 @@ const { setUser } = useData();
       if (response.status === 201) {
         // const expert = [...response.data];
         alert("Expert registered successfully!");
-        // console.log(response.data.expert);
+        console.log(response.data.expert);
         const expertData = response.data.expert;
         const expert = {
           ...expertData,
@@ -139,7 +140,20 @@ const { setUser } = useData();
                     required
                   />
                 </div>
-
+                <div>
+                  <label className="block text-gray-700 font-medium mb-1">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Enter password"
+                    className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                    required
+                  />
+                </div>
                 <div>
                   <label className="block text-gray-700 font-medium mb-1">
                     Mobile Number
@@ -239,15 +253,6 @@ const { setUser } = useData();
               </div>
             </div>
 
-            <div className="text-center text-gray-600 text-sm mt-4">
-              Already have an account?{" "}
-              <Link
-                className="underline text-blue-600 font-medium hover:text-blue-800"
-                to="/expert/login"
-              >
-                Login
-              </Link>
-            </div>
 
             {/* ✅ Submit Button */}
             <div className="col-span-1 md:col-span-2 text-center mt-10">

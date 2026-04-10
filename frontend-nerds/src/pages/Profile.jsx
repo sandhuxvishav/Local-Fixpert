@@ -73,6 +73,9 @@ const Profile = () => {
               <p className="text-gray-600 text-sm sm:text-base mt-1">
                 {expert.email}
               </p>
+              <p className="text-gray-600 text-sm sm:text-base mt-1">
+                {expert.expertID}
+              </p>
               <p className="text-gray-600 text-sm sm:text-base">
                 {expert.mobile}
               </p>
@@ -175,6 +178,7 @@ const Profile = () => {
               <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
                 {user.name}
               </h2>
+              
               <p className="text-gray-600 text-sm sm:text-base mt-1">
                 {user.email}
               </p>

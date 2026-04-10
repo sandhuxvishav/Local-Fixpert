@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Booking = require("../models/Booking");
+const mongoose = require("mongoose");
 
 /* -------------------------------------------------------------------------- */
 /*                         🔹 POST: Create New Booking                        */
@@ -106,35 +107,18 @@ router.post("/rebook/:id", async (req, res) => {
   }
 });
 
-// router.put("/status/:id", async (req, res) => {
-//   try {
-//     const { status } = req.body;
-
-//     const booking = await Booking.findByIdAndUpdate(
-//       req.params.id,
-//       { status },
-//       { new: true }
-//     );
-
-//     res.json({ success: true, booking });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
 
 router.put("/status/:id", async (req, res) => {
-  const { status } = req.body;
+  let { status } = req.body;
 
   try {
+    status = status.toLowerCase(); // 🔥 normalize
+
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true }
     );
-
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
 
     res.json(booking);
   } catch (err) {
@@ -150,6 +134,76 @@ router.get("/expert/:expertId", async (req, res) => {
 
     res.json(bookings);
   } catch (err) {
+    res.status(500).json({ message: "Error fetching bookings" });
+  }
+});
+
+/*        🔹 GET: Count bookings by status (for expert dashboard)             */
+
+router.get("/stats/:expertId", async (req, res) => {
+  try {
+    const { expertId } = req.params;
+
+    // 🔴 Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(expertId)) {
+      return res.status(400).json({ message: "Invalid expertId" });
+    }
+
+    const stats = await Booking.aggregate([
+      {
+        $match: {
+          expertId: new mongoose.Types.ObjectId(expertId),
+        },
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const result = {
+      total: 0,
+      pending: 0,
+      accepted: 0,
+      completed: 0,
+      cancelled: 0,
+    };
+
+    stats.forEach((item) => {
+      const key = item._id?.toLowerCase();
+      if (result.hasOwnProperty(key)) {
+        result[key] = item.count;
+        result.total += item.count;
+      }
+    });
+
+    res.json({ success: true, stats: result });
+  } catch (error) {
+    console.error("❌ Stats error FULL:", error); // 👈 log full error
+    res.status(500).json({
+      message: "Failed to fetch stats",
+      error: error.message, // 👈 send actual error
+    });
+  }
+});
+
+router.get("/expert/active/:expertId", async (req, res) => {
+  try {
+    const { expertId } = req.params;
+
+    const bookings = await Booking.find({
+      expertId,
+      status: "confirmed",
+      // status: { $in: ["pending", "confirmed"] }, // ✅ filter here
+    })
+      .populate("userId", "name")
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, bookings });
+  } catch (err) {
+    console.error("❌ Error fetching active bookings:", err);
     res.status(500).json({ message: "Error fetching bookings" });
   }
 });

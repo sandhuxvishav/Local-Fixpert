@@ -102,6 +102,15 @@ const { setUser } = useData();
             Login
           </button>
 
+            <div className="text-center text-gray-600 text-sm mt-4">
+              Log in as Expert{" "}
+              <Link
+                className="underline text-blue-600 font-medium hover:text-blue-800"
+                to="/expert/login"
+              >
+                Login
+              </Link>
+            </div>
           {/* Redirect to Register */}
           <div className="text-center text-gray-600 text-sm mt-4">
             Don’t have an account?{" "}
@@ -112,6 +121,7 @@ const { setUser } = useData();
               Register
             </Link>
           </div>
+          
         </form>
       </div>
     </div>

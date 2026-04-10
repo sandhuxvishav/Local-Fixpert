@@ -14,6 +14,7 @@ import {
   FiTool,
   FiCalendar,
   FiInbox,
+  FiMapPin
 } from "react-icons/fi";
 
 // ─── Status config ────────────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ function BookingCard({ booking, onUpdateStatus }) {
   const config = getConfig(status);
 
   const isPending = status === "pending";
-  const isAccepted = status === "accepted";
+  const isAccepted = status === "confirmed";
 
   return (
     <motion.div
@@ -76,6 +77,7 @@ function BookingCard({ booking, onUpdateStatus }) {
         <div className="mt-2 space-y-1">
           <Row icon={<FiPhone size={11} />} text={booking.mobile || "N/A"} />
           <Row icon={<FiTool size={11} />} text={booking.serviceType || "Not specified"} />
+          <Row icon={<FiMapPin size={11} />} text={booking.location || "N/A"} />
           <Row icon={<FiCalendar size={11} />} text={new Date(booking.createdAt).toLocaleString()} />
         </div>
 
@@ -95,13 +97,13 @@ function BookingCard({ booking, onUpdateStatus }) {
                     icon={<FiCheck size={12} />}
                     label="Accept"
                     color="bg-[#3B82F6] hover:bg-blue-700 text-white"
-                    onClick={() => onUpdateStatus(booking._id, "Accepted")}
+                    onClick={() => onUpdateStatus(booking._id, "confirmed")}
                   />
                   <ActionBtn
                     icon={<FiX size={12} />}
                     label="Cancel"
                     color="bg-[#FACC15] hover:bg-yellow-400 text-gray-900"
-                    onClick={() => onUpdateStatus(booking._id, "Cancelled")}
+                    onClick={() => onUpdateStatus(booking._id, "cancelled")}
                   />
                 </>
               )}
@@ -110,7 +112,7 @@ function BookingCard({ booking, onUpdateStatus }) {
                   icon={<FiCheckCircle size={12} />}
                   label="Mark Complete"
                   color="bg-emerald-600 hover:bg-emerald-700 text-whtie"
-                  onClick={() => onUpdateStatus(booking._id, "Completed")}
+                  onClick={() => onUpdateStatus(booking._id, "completed")}
                 />
               )}
             </motion.div>
@@ -146,7 +148,7 @@ function ActionBtn({ icon, label, color, onClick }) {
 }
 
 // ─── Filter tab ───────────────────────────────────────────────────────────────
-const TABS = ["All", "Pending", "Accepted", "Completed", "Cancelled"];
+const TABS = ["All", "Pending", "Confirmed", "Completed", "Cancelled"];
 
 function FilterTabs({ active, onChange }) {
   const [searchParams] = useSearchParams();

@@ -6,8 +6,8 @@ import axios from "axios";
 
 const EditProfile = () => {
     const navigate = useNavigate();
-      const {user ,setUser} = useData();
-    
+    const { user, setUser } = useData();
+
     const [form, setForm] = useState({
         fullName: "",
         email: "",
@@ -33,13 +33,12 @@ const EditProfile = () => {
 
     /* ---------------- Load Existing Data ---------------- */
     useEffect(() => {
-        const stored = user;
-        if (!stored) {
+        if (!user) {
             navigate("/expert/login");
         } else {
-            setForm(stored);
+            setForm(user);
         }
-    }, [navigate]);
+    }, [user, navigate]);
 
     /* ---------------- Handle Input ---------------- */
     const handleChange = (e) => {
@@ -79,39 +78,49 @@ const EditProfile = () => {
 
     /* ---------------- Update Profile ---------------- */
     const handleUpdate = async () => {
-  const stored = user;
+        const stored = user;
 
-  if (!stored || !stored._id) {
-    alert("Please login again");
-    return navigate("/expert/login");
-  }
+        if (!stored || !stored._id) {
+            alert("Please login again");
+            return navigate("/expert/login");
+        }
 
-  try {
-    setLoading(true);
+        try {
+            setLoading(true);
 
-    const res = await axios.put(
-      `http://localhost:3000/expert/update/${stored._id}`,
-      form
-    );
+            const payload = {
+                fullName: form.fullName,
+                mobile: form.mobile,
+                category: form.category,
+                experience: form.experience,
+                language: form.language,
+                serviceArea: form.serviceArea,
+                profilePhoto: form.profilePhoto,
+            };
 
-    // ✅ USE res HERE (inside try)
-    // localStorage.setItem("expert", JSON.stringify(res.data));
-    const expert = {
-          ...res.data,
-          name: res.data.fullName, // map fullName → name
-        };
-    setUser(expert);
+            const res = await axios.put(
+                `http://localhost:3000/expert/update/${stored._id}`,
+                payload
+            );
 
-    alert("Profile updated successfully!");
-    navigate("/profile");
+            // ✅ USE res HERE (inside try)
+            // localStorage.setItem("expert", JSON.stringify(res.data));
+            const expert = {
+                ...res.data,
+                name: res.data.fullName, // map fullName → name
+            };
+            setUser(expert);
 
-  } catch (err) {
-    console.error(err);
-    alert(err.response?.data?.message || "Update failed");
-  } finally {
-    setLoading(false);
-  }
-};
+            alert("Profile updated successfully!");
+            navigate("/profile");
+
+        } catch (err) {
+            console.error(err);
+            alert(err.response?.data?.message || "Update failed");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#F6FAFF] py-16 px-4 pt-28">
@@ -225,14 +234,14 @@ const EditProfile = () => {
                             />
                         </div>
                     </div>
-                    
+
                 </div>
 
                 {/* ---------------- BUTTON ---------------- */}
-                 
+
                 <div className="text-center mt-10 gap-15">
                     <button
-                        onClick={()=> navigate("/profile")}
+                        onClick={() => navigate("/profile")}
                         className={`px-10 my-8 py-3 rounded-xl text-white font-semibold transition
                                  bg-blue-600 hover:bg-blue-700 mx-8
                             `}
@@ -242,8 +251,8 @@ const EditProfile = () => {
                         onClick={handleUpdate}
                         disabled={loading}
                         className={`px-10 my-8 py-3 rounded-xl text-white font-semibold transition ${loading
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-blue-600 hover:bg-blue-700"
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 hover:bg-blue-700"
                             }`}
                     >
                         {loading ? "Updating..." : "Save Changes"}

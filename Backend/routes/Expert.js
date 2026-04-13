@@ -106,5 +106,53 @@ router.put("/update/:id", async (req, res) => {
   }
 });
 
+// routes/expertRoutes.js
+
+// const { toggleAvailability } = require("../controllers/expertController");
+
+// PATCH /experts/:id/availability
+router.patch("/:id/availability", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { availability } = req.body;
+
+    // 🔍 Validate input
+    if (typeof availability !== "boolean") {
+      return res.status(400).json({
+        success: false,
+        message: "Availability must be boolean",
+      });
+    }
+
+    // 🔎 Find expert
+    const expert = await Expert.findById(id);
+    if (!expert) {
+      return res.status(404).json({
+        success: false,
+        message: "Expert not found",
+      });
+    }
+
+    // 🔄 Update availability
+    expert.isAvailable = availability;
+
+    await expert.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Expert is now ${availability ? "available" : "unavailable"}`,
+      expert,
+    });
+
+  } catch (error) {
+    console.error("Toggle Availability Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+
 
 module.exports = router;

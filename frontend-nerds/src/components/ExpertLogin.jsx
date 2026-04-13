@@ -48,7 +48,7 @@ export default function ExpertLoginPage() {
     }
   }
 
-  if (redirect) return <Navigate to="/profile" />; // ✅ expert dashboard
+  if (redirect) return <Navigate to="/" />; // ✅ expert dashboard
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-r from-blue-100 via-blue-50 to-blue-100 px-6 py-10">

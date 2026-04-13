@@ -14,7 +14,8 @@ import {
   FiTool,
   FiCalendar,
   FiInbox,
-  FiMapPin
+  FiMapPin,
+  FiMail
 } from "react-icons/fi";
 
 // ─── Status config ────────────────────────────────────────────────────────────
@@ -32,6 +33,28 @@ const getConfig = (status = "pending") =>
 function BookingCard({ booking, onUpdateStatus }) {
   const status = booking.status?.toLowerCase() ?? "pending";
   const config = getConfig(status);
+
+  const openWhatsApp = (phone, name, service) => {
+  if (!phone) {
+    alert("Phone number not available");
+    return;
+  }
+
+  let formattedPhone = phone.replace(/\D/g, "");
+
+  // 🇮🇳 India format
+  if (formattedPhone.length === 10) {
+    formattedPhone = "91" + formattedPhone;
+  }
+
+  const message = encodeURIComponent(
+    `Hi ${name}, I'm your expert for ${service}. I'm reaching out regarding your booking.`
+  );
+
+  const url = `https://wa.me/${formattedPhone}?text=${message}`;
+
+  window.open(url, "_blank");
+};
 
   const isPending = status === "pending";
   const isAccepted = status === "confirmed";
@@ -71,6 +94,7 @@ function BookingCard({ booking, onUpdateStatus }) {
           <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${config.badge}`}>
             {getConfig(booking.status).label}
           </span>
+           
         </div>
 
         {/* Meta rows */}
@@ -78,7 +102,7 @@ function BookingCard({ booking, onUpdateStatus }) {
           <Row icon={<FiPhone size={11} />} text={booking.mobile || "N/A"} />
           <Row icon={<FiTool size={11} />} text={booking.serviceType || "Not specified"} />
           <Row icon={<FiMapPin size={11} />} text={booking.location || "N/A"} />
-          <Row icon={<FiCalendar size={11} />} text={new Date(booking.createdAt).toLocaleString()} />
+          <Row icon={<FiCalendar size={11} />} text={new Date(booking.createdAt).toLocaleString()}  /> 
         </div>
 
         {/* Action buttons */}
@@ -91,6 +115,7 @@ function BookingCard({ booking, onUpdateStatus }) {
               transition={{ duration: 0.18 }}
               className="flex flex-wrap gap-2 mt-3"
             >
+              
               {isPending && (
                 <>
                   <ActionBtn
@@ -115,6 +140,18 @@ function BookingCard({ booking, onUpdateStatus }) {
                   onClick={() => onUpdateStatus(booking._id, "completed")}
                 />
               )}
+              <button
+    onClick={() =>
+      openWhatsApp(
+        booking.mobile,
+        booking.userId?.name,
+        booking.serviceType
+      )
+    }
+    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"
+  >
+    {<FiPhone size={11} />}
+  </button>
             </motion.div>
           )}
         </AnimatePresence>

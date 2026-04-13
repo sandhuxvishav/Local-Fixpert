@@ -111,6 +111,7 @@ const StatusBadge = ({ status }) => {
       {label}
     </span>
   );
+};
 
 // ─── SECTION HEADER ───────────────────────────────────────────────────────────
 const SectionHeader = ({ title, count, action, onAction }) => (

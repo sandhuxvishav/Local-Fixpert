@@ -21,9 +21,53 @@ router.post("/regexpert", async (req, res) => {
 });
 
 // ✅ API: Get All Experts
+// router.get("/experts", async (req, res) => {
+//   const experts = await Expert.find();
+//   res.json(experts);
+// });
+const Booking = require("../models/Booking");
+
 router.get("/experts", async (req, res) => {
-  const experts = await Expert.find();
-  res.json(experts);
+  try {
+    const experts = await Expert.aggregate([
+      {
+        $lookup: {
+          from: "bookings", // ⚠️ must match MongoDB collection name
+          localField: "_id",
+          foreignField: "expertId",
+          as: "bookings",
+        },
+      },
+      {
+        $addFields: {
+          clients: {
+            $size: {
+              $filter: {
+                input: "$bookings",
+                as: "b",
+                cond: {
+                  $eq: [
+                    { $toLower: "$$b.status" },
+                    "completed"
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          bookings: 0, // remove heavy data
+        },
+      },
+    ]);
+
+    res.json(experts);
+  } catch (error) {
+    console.error("❌ Error fetching experts:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 router.post("/login", async (req, res) => {

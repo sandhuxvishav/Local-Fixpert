@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useData } from "../Context/DataContext";
 import Nav from "./Nav";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { FaStar, FaRegStar } from "react-icons/fa";
+
 
 const StepTwo = ({ onNext, step, onBack }) => {
   const { setSelectedExpert, locationforfilter, serviceselect } = useData();
@@ -11,6 +13,8 @@ const StepTwo = ({ onNext, step, onBack }) => {
   const [experts, setExperts] = useState([]);
   const [allExperts, setAllExperts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
 
   // ✅ Fetch experts
   useEffect(() => {
@@ -124,21 +128,39 @@ const StepTwo = ({ onNext, step, onBack }) => {
                 </p>
                 
 
-                {renderStars(ex.rating)}
+
+                {renderStars(ex.rating.average.toFixed(1))}
 
                 <div className="text-sm text-left mt-4 space-y-1 text-gray-700">
                   <p><b>Expert ID:</b> {ex.expertID}</p>
                   <p><b>📞 Contact:</b> {ex.mobile}</p>
                   <p><b>📍 City:</b> {ex.serviceArea}</p>
                   <p><b>👥 Clients served:</b> {ex.clients || 0}</p>
+                  <p
+  className={`text-sm font-semibold mt-2 ${
+    ex.isAvailable ? "text-green-600" : "text-red-500"
+  }`}
+>
+  {ex.isAvailable ? "🟢 Available" : "🔴 Not Available"}
+</p>
                 </div>
 
                 <div className="flex gap-3 mt-6 justify-center">
                   <button
-                    onClick={() => handleHire(ex)}
-                    className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition"
+  onClick={() => handleHire(ex)}
+  disabled={!ex.isAvailable}
+  className={`px-5 py-2 rounded-full text-white transition ${
+    ex.isAvailable
+      ? "bg-blue-600 hover:bg-blue-700"
+      : "bg-gray-400 cursor-not-allowed"
+  }`}
+>
+  {ex.isAvailable ? "Hire Me" : "Unavailable"}
+</button> <button
+                    onClick={() => navigate(`/expert/reviews/${ex._id}`)}
+                    className="text-blue-500 text-sm underline"
                   >
-                    Hire Me
+                    View Reviews
                   </button>
                 </div>
               </div>

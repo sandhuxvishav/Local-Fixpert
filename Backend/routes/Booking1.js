@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Booking = require("../models/Booking");
 const mongoose = require("mongoose");
+const Notification = require("../models/Notification");
+const Review = require("../models/Review");
+const Expert = require("../models/Expert");
 
 /* -------------------------------------------------------------------------- */
 /*                         🔹 POST: Create New Booking                        */
@@ -9,7 +12,7 @@ const mongoose = require("mongoose");
 router.post("/", async (req, res) => {
   try {
     const {
-      userId, // ✅ now coming from frontend
+      userId,
       expertId,
       expertName,
       serviceType,
@@ -37,41 +40,52 @@ router.post("/", async (req, res) => {
       payment,
       time,
     });
-    
+
+    // 🔔 Notify Expert
+    await Notification.create({
+      expertId,
+      message: "📩 New service request received",
+      type: "booking",
+    });
+
     res.status(201).json({
       success: true,
       message: "Booking created successfully",
       booking: newBooking,
     });
+
   } catch (error) {
     console.error("❌ Booking creation failed:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
+/* -------------------------------------------------------------------------- */
 /*                     🔹 GET: Fetch All Bookings for a User                  */
-
+/* -------------------------------------------------------------------------- */
 router.get("/mybookings/:userId", async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    const bookings = await Booking.find({ userId })
+    const bookings = await Booking.find({ userId: req.params.userId })
       .populate("expertId", "name category mobile")
       .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, bookings });
+
   } catch (error) {
     console.error("❌ Failed to fetch bookings:", error.message);
     res.status(500).json({ message: "Failed to fetch bookings" });
   }
 });
-// cancel booking
+
+/* -------------------------------------------------------------------------- */
+/*                           🔹 CANCEL BOOKING                                */
+/* -------------------------------------------------------------------------- */
 router.put("/cancel/:id", async (req, res) => {
   try {
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
       { status: "cancelled" },
-      { new: true },
+      { new: true }
     );
 
     if (!booking) {
@@ -79,11 +93,15 @@ router.put("/cancel/:id", async (req, res) => {
     }
 
     res.json({ success: true, booking });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-// rebook
+
+/* -------------------------------------------------------------------------- */
+/*                              🔹 REBOOK                                     */
+/* -------------------------------------------------------------------------- */
 router.post("/rebook/:id", async (req, res) => {
   try {
     const oldBooking = await Booking.findById(req.params.id);
@@ -101,29 +119,48 @@ router.post("/rebook/:id", async (req, res) => {
     });
 
     res.json({ success: true, booking: newBooking });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
+/* -------------------------------------------------------------------------- */
+/*                         🔹 UPDATE STATUS                                   */
+/* -------------------------------------------------------------------------- */
 router.put("/status/:id", async (req, res) => {
   let { status } = req.body;
 
   try {
-    status = status.toLowerCase(); // 🔥 normalize
+    status = status.toLowerCase();
 
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true },
+      { new: true }
     );
 
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // 🔔 Notify User
+    await Notification.create({
+      userId: booking.userId,
+      message: `✅ Your booking has been ${status}`,
+      type: "status",
+    });
+
     res.json(booking);
+
   } catch (err) {
     res.status(500).json({ message: "Error updating status" });
   }
 });
 
+/* -------------------------------------------------------------------------- */
+/*                       🔹 GET BOOKINGS FOR EXPERT                           */
+/* -------------------------------------------------------------------------- */
 router.get("/expert/:expertId", async (req, res) => {
   try {
     const bookings = await Booking.find({
@@ -133,13 +170,15 @@ router.get("/expert/:expertId", async (req, res) => {
       .sort({ createdAt: -1 });
 
     res.json(bookings);
+
   } catch (err) {
     res.status(500).json({ message: "Error fetching bookings" });
   }
 });
 
-/*        🔹 GET: Count bookings by status (for expert dashboard)             */
-
+/* -------------------------------------------------------------------------- */
+/*                      🔹 GET STATS FOR DASHBOARD                            */
+/* -------------------------------------------------------------------------- */
 router.get("/stats/:expertId", async (req, res) => {
   try {
     const { expertId } = req.params;
@@ -149,14 +188,9 @@ router.get("/stats/:expertId", async (req, res) => {
     }
 
     const now = new Date();
-
-    // 🗓️ Start of month
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    // 🗓️ End of month
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-    // 🔹 ALL STATUS COUNTS
     const stats = await Booking.aggregate([
       {
         $match: {
@@ -171,24 +205,19 @@ router.get("/stats/:expertId", async (req, res) => {
       },
     ]);
 
-    // 🔹 THIS MONTH COMPLETED
     const thisMonthCompleted = await Booking.countDocuments({
       expertId,
       status: "completed",
-      createdAt: {
-        $gte: startOfMonth,
-        $lt: endOfMonth,
-      },
+      createdAt: { $gte: startOfMonth, $lt: endOfMonth },
     });
 
-    // 🔹 FORMAT RESPONSE
     const result = {
       total: 0,
       pending: 0,
       confirmed: 0,
       completed: 0,
       cancelled: 0,
-      thisMonth: thisMonthCompleted, // ✅ REAL VALUE
+      thisMonth: thisMonthCompleted,
     };
 
     stats.forEach((item) => {
@@ -200,35 +229,35 @@ router.get("/stats/:expertId", async (req, res) => {
     });
 
     res.json({ success: true, stats: result });
+
   } catch (error) {
     console.error("❌ Stats error:", error);
     res.status(500).json({ message: "Failed to fetch stats" });
   }
 });
 
+/* -------------------------------------------------------------------------- */
+/*                         🔹 ACTIVE BOOKINGS                                 */
+/* -------------------------------------------------------------------------- */
 router.get("/expert/active/:expertId", async (req, res) => {
   try {
-    const { expertId } = req.params;
-
     const bookings = await Booking.find({
-      expertId,
+      expertId: req.params.expertId,
       status: "confirmed",
-      // status: { $in: ["pending", "confirmed"] }, // ✅ filter here
     })
       .populate("userId", "name")
       .sort({ createdAt: -1 });
 
     res.json({ success: true, bookings });
+
   } catch (err) {
-    console.error("❌ Error fetching active bookings:", err);
     res.status(500).json({ message: "Error fetching bookings" });
   }
 });
 
-// POST /bookservice/rate/:id
-const Review = require("../models/Review");
-const Expert = require("../models/Expert");
-
+/* -------------------------------------------------------------------------- */
+/*                         🔹 RATE + REVIEW                                   */
+/* -------------------------------------------------------------------------- */
 router.post("/rate/:id", async (req, res) => {
   try {
     let { rating, review } = req.body;
@@ -246,7 +275,7 @@ router.post("/rate/:id", async (req, res) => {
       return res.status(400).json({ msg: "Already rated" });
     }
 
-    // ✅ create review
+    // ✅ Create review
     await Review.create({
       bookingId: booking._id,
       expertId: booking.expertId,
@@ -255,35 +284,38 @@ router.post("/rate/:id", async (req, res) => {
       review,
     });
 
-    // ⭐ UPDATE EXPERT FIRST
+    // ⭐ Update expert rating
     const expert = await Expert.findById(booking.expertId);
 
     if (expert) {
       expert.rating.count += 1;
-
       expert.rating.average =
         (expert.rating.average * (expert.rating.count - 1) + rating) /
         expert.rating.count;
 
       await expert.save();
-
-      console.log("✅ Expert updated:", expert.rating);
-    } else {
-      console.log("❌ Expert NOT FOUND");
     }
 
-    // ✅ THEN mark booking
+    // 🔔 Notify Expert
+    await Notification.create({
+      expertId: booking.expertId,
+      message: "🌟 You got a new 5-star review!",
+      type: "review",
+    });
+
     booking.isRated = true;
     await booking.save();
 
     res.json({ success: true });
+
   } catch (err) {
-    console.error(err);
     res.status(500).json({ err: err.message });
   }
 });
 
-// get reviews
+/* -------------------------------------------------------------------------- */
+/*                         🔹 GET REVIEWS                                     */
+/* -------------------------------------------------------------------------- */
 router.get("/reviews/:expertId", async (req, res) => {
   try {
     const reviews = await Review.find({
@@ -293,6 +325,7 @@ router.get("/reviews/:expertId", async (req, res) => {
       .sort({ createdAt: -1 });
 
     res.json({ success: true, reviews });
+
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }

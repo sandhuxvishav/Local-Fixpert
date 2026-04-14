@@ -148,7 +148,7 @@ const StepThree = ({ step, onBack }) => {
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {selectedExpert.description}
                 </p>
-                {renderStars(selectedExpert.rating)}
+                {renderStars(selectedExpert.rating.average)}
               </div>
             </div>
 

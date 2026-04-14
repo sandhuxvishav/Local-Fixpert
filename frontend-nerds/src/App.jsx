@@ -14,6 +14,7 @@ import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyBookings from "./pages/Mybookings";
+import ExpertReviews from "./components/ExpertReviews"
 axios.defaults.baseURL = "http://localhost:3000";
 axios.defaults.withCredentials = true;
 
@@ -35,6 +36,7 @@ function App() {
           <Route path="/edit-profile/expert" element={<EditExpertProfile />} />
           <Route path="/expertbookings" element={<ExpertBookings />} />
           <Route path="/mybookings" element={<MyBookings />} />
+          <Route path="/expert/reviews/:expertId" element={<ExpertReviews />} />
         </Routes>
       </BrowserRouter>
     </>

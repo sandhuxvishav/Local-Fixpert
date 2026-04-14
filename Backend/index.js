@@ -67,6 +67,9 @@ const reviewRoutes = require("./routes/Review");
 
 app.use("/review", reviewRoutes);
 
+const notificationRoutes = require("./routes/notificationRoutes");
+app.use("/notifications", notificationRoutes);
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });

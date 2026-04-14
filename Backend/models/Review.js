@@ -2,21 +2,16 @@ const mongoose = require("mongoose");
 
 const reviewSchema = new mongoose.Schema(
   {
-    stars: {
-      type: Number,
+    bookingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
       required: true,
-      min: 1,
-      max: 5,
+      unique: true, // ✅ one review per booking
     },
 
-    reviewText: {
-      type: String,
-      trim: true,
-      maxlength: 500,
-    },
-
-    author: {
-      type: String,
+    expertId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Expert",
       required: true,
     },
 
@@ -25,10 +20,20 @@ const reviewSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },
+
+    review: {
+      type: String,
+      trim: true,
+    },
   },
-  {
-    timestamps: true, // adds createdAt, updatedAt
-  }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Review", reviewSchema);

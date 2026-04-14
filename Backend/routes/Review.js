@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Review = require("../models/Review");
-
+const Review = require("../models/PlatformReview");
 
 // 👉 Add Review
 router.post("/review-insert", async (req, res) => {
@@ -27,19 +26,16 @@ router.post("/review-insert", async (req, res) => {
   }
 });
 
-
 // 👉 Get All Reviews
 router.get("/reviews", async (req, res) => {
   try {
-    const reviews = await Review.find()
-      .sort({ createdAt: -1 }); // latest first
+    const reviews = await Review.find().sort({ createdAt: -1 }); // latest first
 
     res.json(reviews);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch reviews" });
   }
 });
-
 
 // 👉 Get Average Rating
 router.get("/reviews/average", async (req, res) => {
@@ -59,7 +55,6 @@ router.get("/reviews/average", async (req, res) => {
     res.status(500).json({ message: "Failed to calculate rating" });
   }
 });
-
 
 // 👉 Delete Review (optional)
 router.delete("/review/:id", async (req, res) => {

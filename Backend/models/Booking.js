@@ -26,8 +26,9 @@ const bookingSchema = new mongoose.Schema(
       default: "pending",
       lowercase: "true",
     },
+    isRated: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Booking", bookingSchema);

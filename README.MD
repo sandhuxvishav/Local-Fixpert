@@ -3,59 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Local Fixperts</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9fafb;
-      color: #333;
-      line-height: 1.6;
-    }
-    header {
-      background: skyblue;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    section {
-      padding: 20px;
-      margin: 10px auto;
-      max-width: 900px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    h1, h2, h3 {
-      color: #1e40af;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    code {
-      background: #f1f5f9;
-      padding: 5px;
-      border-radius: 5px;
-      display: block;
-      margin: 10px 0;
-    }
-    .tag {
-      display: inline-block;
-      background: #e0e7ff;
-      color: #1e40af;
-      padding: 5px 10px;
-      border-radius: 20px;
-      margin: 5px;
-      font-size: 14px;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #1e40af;
-      color: white;
-    }
-  </style>
+  
 </head>
 <body>
 

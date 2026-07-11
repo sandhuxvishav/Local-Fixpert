@@ -263,6 +263,7 @@ export default function MyBookings() {
 
   return (
     <div className="max-w-5xl mx-auto mt-24 px-4 ">
+    <div className="max-w-5xl mx-auto mt-24 px-4 ">
       <h2 className="text-3xl font-extrabold text-center mb-6">My Bookings</h2>
 
       {/* 🔽 FILTER */}
@@ -280,9 +281,35 @@ export default function MyBookings() {
 
       {/* 🧾 CARDS */}
       <div className="grid gap-5">
+      <div className="grid gap-5">
         {filteredBookings.map((booking) => (
           
+          
           <motion.div
+  key={booking._id}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  className="bg-[#f8fafc] border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition"
+>
+  {/* HEADER */}
+  <div className="flex justify-between items-start">
+    
+    <div className="flex items-center gap-3">
+      {/* Avatar */}
+      <div className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden">
+        <img
+                  src={
+                    `https://ui-avatars.com/api/?name=${booking.expertName}`
+                  }
+                  alt={booking.expertName}
+                  className=" rounded-full mx-auto  object-cover border-2 border-blue-400"
+                />
+        </div>
+
+      <div>
+        <h3 className="font-semibold text-gray-800 text-lg">
+          {booking.expertName}
+        </h3>
   key={booking._id}
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
@@ -336,6 +363,34 @@ export default function MyBookings() {
       {booking.status}
     </span>
   </div>
+        <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+          <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">
+            {booking.expertId?.category?.toUpperCase()}
+          </span>
+
+          <span className="flex items-center gap-1">
+            <FiMapPin size={12} />
+            {booking.location}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* STATUS */}
+    <span
+      className={`text-xs px-3 py-1 rounded-full font-medium capitalize ${
+        booking.status === "quoted"
+          ? "bg-orange-100 text-orange-600"
+          : booking.status === "pending"
+          ? "bg-blue-100 text-blue-600"
+          : booking.status === "completed"
+          ? "bg-gray-200 text-gray-600"
+          : "bg-red-100 text-red-500"
+      }`}
+    >
+      {booking.status}
+    </span>
+  </div>
 
   {/* DATE */}
   <div className="flex items-center gap-2 text-sm text-gray-500 mt-4">
@@ -357,74 +412,84 @@ export default function MyBookings() {
           <span>Service Price</span>
           <span>₹{booking.quoteAmount}</span>
         </div>
+  {/* DATE */}
+  <div className="flex items-center gap-2 text-sm text-gray-500 mt-4">
+      <span className="text-blue-500">
 
-            {/* DESC */}
-            {booking.description && (
-              <p className="text-xs text-gray-500 mt-2">
-                {booking.description}
-              </p>
-            )}
+    <FiCalendar size={14}/> </span>
+    {booking.date} • {booking.time}
+  </div>
 
-            {/* PAYMENT */}
-            <div className="flex justify-between items-center mt-3">
-              <span className="text-xs bg-green-100 px-2 py-1 rounded">
-                {booking.payment}
-              </span>
-              <span className="text-xs text-gray-400">
-                {new Date(booking.createdAt).toLocaleString()}
-              </span>
-            </div>
+  {/* CONTENT BLOCK */}
+  <div className="mt-4">
+    {(booking.status === "quoted" || booking.status === "accepted" || booking.status === "completed" )? (
+      <div className="bg-gray-100 border border-gray-200 rounded-xl p-4">
+        <p className="text-xs text-gray-400 mb-2 uppercase font-medium">
+          Quote Summary
+        </p>
 
-            {/* ACTIONS */}
-            <div className="flex gap-2 mt-4 flex-wrap">
-              {booking.status !== "cancelled" && (
-                <button
-                  onClick={() => cancelBooking(booking._id)}
-                  className="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded-full text-xs hover:bg-red-600"
-                >
-                  <FiX size={12} /> Cancel
-                </button>
-              )}
+        <div className="flex justify-between text-sm text-gray-600">
+          <span>Service Price</span>
+          <span>₹{booking.quoteAmount}</span>
+        </div>
 
-              <button
-               onClick={() => navigate(`/rebook/${booking._id}`)}
-                className="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded-full text-xs hover:bg-blue-600"
-              >
-                <FiRefreshCw size={12} /> Rebook
-              </button>
+        <div className="flex justify-between text-sm text-gray-600 mt-1">
+          <span>Platform Fee</span>
+          <span>₹{booking.platformFee || 100}</span>
+        </div>
 
-              <button
-                onClick={() =>
-                  openWhatsApp(
-                    booking.expertId?.mobile,
-                    booking.expertName,
-                    booking.serviceType,
-                  )
-                }
-                className="flex items-center gap-1 bg-green-500 text-white px-3 py-1 rounded-full text-xs hover:bg-green-600"
-              >
-                <FiPhone size={12} /> Chat
-              </button>
+        <div className="border-t mt-3 pt-2 flex justify-between font-semibold text-gray-800">
+          <span>Total Payable</span>
+          <span className="text-blue-600">
+            ₹{(booking.quoteAmount || 0) + (booking.platformFee || 100)}
+          </span>
+        </div>
+      </div>
+    ) : (
+      <div className="bg-gray-100 border border-gray-200 rounded-xl p-6 py-10 flex flex-col gap-2 items-center justify-center text-center text-blue-500 ">
+        ⏳ <br/> <br/>Awaiting quote from the professional
+      </div>
+    )}
+  </div>
 
-              {booking.status === "completed" && !booking.isRated && (
-                <button
-                  onClick={() => setRatingModal(booking)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs"
-                >
-                  ⭐ Rate
-                </button>
-              )}
-              {booking.isRated && (
-                <div className="text-yellow-500 text-sm mt-2">
-                  {booking.isRated && (
-                    <span className="text-yellow-500 text-sm font-medium">
-                      Rated ⭐
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-          </motion.div>
+  {/* FOOTER ACTIONS */}
+  <div className="flex justify-between items-center mt-5 flex-wrap gap-3">
+    
+    {/* LEFT ACTIONS */}
+    <div className="flex gap-2 flex-wrap">
+      
+      <button
+        onClick={() =>
+          openWhatsApp(
+            booking.expertId?.mobile,
+            booking.expertName,
+            booking.serviceType
+          )
+        }
+        className="px-4 py-2 text-sm border border-gray-300 rounded-xl text-blue-600 hover:bg-blue-50 flex items-center gap-1"
+      >
+        <FiPhone size={14} /> Chat
+      </button>
+      {(booking.status === "pending"|| booking.status === "quoted") && (<button 
+        onClick={() => rejectQuote(booking._id)}
+        className="px-4 py-2 text-sm border border-gray-300 rounded-xl text-red-500 hover:bg-red-50 flex items-center gap-1"
+      >
+        ✕ Reject
+      </button>)}
+      
+
+      <button
+        onClick={() => navigate(`/rebook/${booking._id}`)}
+        className="px-4 py-2 text-sm border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 flex items-center gap-1"
+      >
+        <FiRefreshCw size={14} /> Rebook
+      </button>
+    </div>
+
+    {/* PRIMARY CTA */}
+   {renderPrimaryCTA(booking)}
+  </div>
+</motion.div>
         ))}
         {ratingModal && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
@@ -439,6 +504,8 @@ export default function MyBookings() {
                   <span
                     key={star}
                     onClick={() => setRating(star)}
+                    className={`cursor-pointer text-2xl ${star <= rating ? "text-yellow-400" : "text-gray-300"
+                      }`}
                     className={`cursor-pointer text-2xl ${star <= rating ? "text-yellow-400" : "text-gray-300"
                       }`}
                   >
@@ -484,7 +551,194 @@ export default function MyBookings() {
             </div>
           </div>
         )}
+        {paymentModal && (
+
+          <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+            <div className="bg-white/95 p-6 rounded-2xl w-96 shadow-lg">
+
+              <h3 className="text-lg font-bold mb-2 text-center">
+                💳 Payment
+              </h3>
+
+
+
+              {(() => {
+                const service = paymentModal?.quoteAmount || 0;
+                const fee = paymentModal?.platformFee || 100;
+                const total = service + fee;
+
+                return (
+                  <div className="text-center text-sm mb-3">
+
+                    <p className="">Amount: ₹{total}</p>
+                  </div>
+                );
+              })()}
+
+              {/* 🔘 METHOD SELECT */}
+              <div className="flex justify-between border border-gray-300 rounded-xl mb-4">
+                {["card", "upi", "Cash"].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMethod(m)}
+                    className={`px-3 py-1 rounded-full text-xs ${method === m
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-600"
+                      }`}
+                  >
+                    {m.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+
+              {/* 💳 CARD */}
+              {method === "card" && (
+                <>
+                  <input
+                    placeholder="Card Number"
+                    className="my-2 w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={card.number}
+                    onChange={(e) =>
+                      setCard({ ...card, number: e.target.value })
+                    }
+                  />
+
+                  <input
+                    placeholder="Card Holder Name"
+                    className="my-2 w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={card.name}
+                    onChange={(e) =>
+                      setCard({ ...card, name: e.target.value })
+                    }
+                  />
+
+                  <div className="flex gap-2">
+                    <input
+                      placeholder="MM/YY"
+                      className="w-1/2 my-2 border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={card.expiry}
+                      onChange={(e) =>
+                        setCard({ ...card, expiry: e.target.value })
+                      }
+                    />
+
+                    <input
+                      placeholder="CVV"
+                      type="password"
+                      className="w-1/2 my-2 border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={card.cvv}
+                      onChange={(e) =>
+                        setCard({ ...card, cvv: e.target.value })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* 📱 UPI */}
+              {method === "upi" && (
+                <input
+                  placeholder="Enter UPI ID (name@upi)"
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={upi}
+                  onChange={(e) => setUpi(e.target.value)}
+                />
+              )}
+
+              {/* 🏦 NET BANKING */}
+              {method === "netbanking" && (
+                <select
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={bank}
+                  onChange={(e) => setBank(e.target.value)}
+                >
+                  <option value="">Select Bank</option>
+                  <option>HDFC</option>
+                  <option>SBI</option>
+                  <option>ICICI</option>
+                </select>
+              )}
+
+              {/* 🔘 BUTTONS */}
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => setPaymentModal(null)}
+                  className="bg-gray-500 hover:bg-blue-700 flex-1 text-white font-semibold py-2.5 rounded-xl transition-all duration-300 shadow-md hover:scale-[1.02]"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={async () => {
+                    try {
+                      setPayLoading(true);
+
+                      // ✅ VALIDATION
+                      if (method === "card") {
+                        if (!isValidCardNumber(card.number))
+                          return alert("Invalid card number");
+                        if (!card.name)
+                          return alert("Enter card holder name");
+                        if (!isValidExpiry(card.expiry))
+                          return alert("Invalid expiry");
+                        if (!/^\d{3,4}$/.test(card.cvv))
+                          return alert("Invalid CVV");
+                      }
+
+                      if (method === "upi") {
+                        if (!isValidUPI(upi))
+                          return alert("Invalid UPI ID");
+                      }
+
+                      if (method === "netbanking") {
+                        if (!bank)
+                          return alert("Select a bank");
+                      }
+
+                      // 1️⃣ Accept booking
+                      await axios.post(
+                        `${url}/bookservice/accept/${paymentModal._id}`
+                      );
+
+                      // 2️⃣ Fake delay
+                      await new Promise((r) => setTimeout(r, 1500));
+
+                      // 3️⃣ Verify payment
+                      await axios.post(
+                        `${url}/bookservice/verify-payment`,
+                        {
+                          bookingId: paymentModal._id,
+                          paymentId:
+                            "FAKE_" + method + "_" + Date.now(),
+                        }
+                      );
+
+                      alert("✅ Payment Successful");
+
+                      setPaymentModal(null);
+                      setCard({ number: "", name: "", expiry: "", cvv: "" });
+                      setUpi("");
+                      setBank("");
+
+                      fetchBookings();
+
+                    } catch (err) {
+                      console.error(err);
+                      alert("❌ Payment failed");
+                    } finally {
+                      setPayLoading(false);
+                    }
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 flex-1 text-white font-semibold py-2.5 rounded-xl transition-all duration-300 shadow-md hover:scale-[1.02]"
+                >
+                  {payLoading ? "Processing..." : "Pay Now"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+    </div>  
     </div>  
   );
 }
